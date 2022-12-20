@@ -1,19 +1,7 @@
-import java.util.*;
-
 public class Board {
     
     public static Piece[][] board = new Piece[8][8];
-    public static HashMap<Character, Integer> column_convert = new HashMap<Character, Integer>();
-    static{
-        column_convert.put('a', 0);
-        column_convert.put('b', 1);
-        column_convert.put('c', 2);
-        column_convert.put('d', 3);
-        column_convert.put('e', 4);
-        column_convert.put('f', 5);
-        column_convert.put('g', 6);
-        column_convert.put('h', 7);
-    }
+    public static String column_convert = "abcdefgh";
 
     public Board() {
         //Initialize white pieces
@@ -59,14 +47,14 @@ public class Board {
 
     public void offerMoves(char column, int row) {
         //<clear all previously highlighted squares> (to be implemented in GUI)
-        
+        //<display moves that selected piece can make (from Piece.getMoves)>
     }
 
     public void move(char from_column, int from_row, char to_column, int to_row) {
         //this assumes that the move is valid (handled by offerMoves method)
-        Piece p = board[column_convert.get(from_column)][from_row];
-        board[column_convert.get(from_column)][from_row] = null;
-        board[to_column][to_row] = p;
+        Piece p = board[column_convert.indexOf(from_column)][from_row-1];
+        board[column_convert.indexOf(from_column)][from_row-1] = null;
+        board[column_convert.indexOf(to_column)][to_row-1] = p;
     }
 
     public void draw(String turn) {

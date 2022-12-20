@@ -1,21 +1,18 @@
+import java.util.*;
+
 public class Bishop extends Piece {
 
     public Bishop(String color, char column, int row, String tag) {
         super(color, column, row, tag);
     }
 
-    public int[][] getMovePattern() {
-        //WIP
-        if (this.color.equals("white")) 
-            return new int[][] {{1, 0}};
-        return new int[][] {{-1, 0}};
-    }
-
-    public int[][] getAttackingSquares() {
-        //WIP
-        if (this.color.equals("white"))
-            return new int[][] {{1, 1}, {1, -1}};
-        return new int[][] {{-1, 1}, {-1, -1}};            
+    public ArrayList<ArrayList<Integer>> getAttackingSquares() {
+        ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
+        moves.addAll(addLine(new int[] {1, 1}));
+        moves.addAll(addLine(new int[] {-1, 1}));
+        moves.addAll(addLine(new int[] {1, -1}));
+        moves.addAll(addLine(new int[] {-1, -1}));
+        return moves;
     }
 
 }
