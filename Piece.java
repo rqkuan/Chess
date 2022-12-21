@@ -32,8 +32,8 @@ abstract class Piece {
         return color;
     }
 
-    public String getTag() {
-        return tag.code;
+    public TAG getTag() {
+        return tag;
     }
 
     public int getCol() {

@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Board {
     
     public static Piece[][] board = new Piece[8][8];
@@ -44,6 +46,21 @@ public class Board {
     public void addPiece(Piece piece){
         board[piece.getCol()][piece.getRow()] = piece;
     }
+    
+    public ArrayList<ArrayList<Integer>> findChecks(Piece.COLOR color) {
+        ArrayList<ArrayList<Integer>> checks = new ArrayList<ArrayList<Integer>>();
+        for (Piece[] column : board) {
+            for (Piece p : column) {
+                ArrayList<ArrayList<Integer>> attacked = p.getAttackingSquares();
+                for (int i = 0; i < attacked.size(); i++) {
+                    Piece checkPiece = board[attacked.get(i).get(0)][attacked.get(i).get(1)];
+                    if (checkPiece.getTag() == Piece.TAG.KING && checkPiece.getColor() == color && !checks.contains(attacked.get(i)))
+                        checks.add(attacked.get(i));
+                }
+            }
+        }
+        return checks;
+    }
 
     public void offerMoves(char column, int row) {
         //<clear all previously highlighted squares> (to be implemented in GUI)
@@ -74,7 +91,7 @@ public class Board {
                     else
                         str += "■";
                 else
-                    str += board[col][row].getTag();
+                    str += board[col][row].getTag().code;
                 str += " ";
             }
             str += "\n";
