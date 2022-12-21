@@ -2,23 +2,38 @@ import java.util.*;
 
 abstract class Piece {
 
-    protected String color, tag;
+    public enum COLOR {WHITE, BLACK}
+    public enum TAG {
+        PAWN(""), 
+        BISHOP("B"), 
+        KNIGHT("N"), 
+        ROOK("R"), 
+        QUEEN("Q"), 
+        KING("K");
+
+        public final String code;
+        private TAG(String code) {
+            this.code = code;
+        }
+    }
+    protected final COLOR color;
+    protected final TAG tag;
     protected int col, row;
     protected ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 
-    public Piece(String color, char column, int row, String tag) {
+    public Piece(COLOR color, char column, int row, TAG tag) {
         this.color = color; 
         this.tag = tag;
         this.col = Board.column_convert.indexOf(column);
         this.row = row - 1;
     }    
 
-    public String getColor() {
+    public COLOR getColor() {
         return color;
     }
 
     public String getTag() {
-        return tag;
+        return tag.code;
     }
 
     public int getCol() {

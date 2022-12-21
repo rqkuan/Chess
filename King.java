@@ -2,8 +2,8 @@ import java.util.*;
 
 public class King extends Piece {
 
-    public King(String color, char column, int row, String tag) {
-        super(color, column, row, tag);
+    public King(COLOR color, char column, int row) {
+        super(color, column, row, TAG.KING);
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {

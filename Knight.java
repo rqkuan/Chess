@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Knight extends Piece {
 
-    public Knight(String color, char column, int row, String tag) {
-        super(color, column, row, tag);
+    public Knight(COLOR color, char column, int row) {
+        super(color, column, row, TAG.KNIGHT);
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {

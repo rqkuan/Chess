@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Queen extends Piece {
 
-    public Queen(String color, char column, int row, String tag) {
-        super(color, column, row, tag);
+    public Queen(COLOR color, char column, int row) {
+        super(color, column, row, TAG.QUEEN);
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {

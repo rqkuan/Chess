@@ -5,40 +5,40 @@ public class Board {
 
     public Board() {
         //Initialize white pieces
-        this.addPiece(new Rook("white", 'a', 1, "♖"));
-        this.addPiece(new Knight("white", 'b', 1, "♘"));
-        this.addPiece(new Bishop("white", 'c', 1, "♗"));
-        this.addPiece(new Queen("white", 'd', 1, "♕"));
-        this.addPiece(new King("white", 'e', 1, "♔"));
-        this.addPiece(new Bishop("white", 'f', 1, "♗"));
-        this.addPiece(new Knight("white", 'g', 1, "♘"));
-        this.addPiece(new Rook("white", 'h', 1, "♖"));
-        this.addPiece(new Pawn("white", 'a', 2, "♙"));
-        this.addPiece(new Pawn("white", 'b', 2, "♙"));
-        this.addPiece(new Pawn("white", 'c', 2, "♙"));
-        this.addPiece(new Pawn("white", 'd', 2, "♙"));
-        this.addPiece(new Pawn("white", 'e', 2, "♙"));
-        this.addPiece(new Pawn("white", 'f', 2, "♙"));
-        this.addPiece(new Pawn("white", 'g', 2, "♙"));
-        this.addPiece(new Pawn("white", 'h', 2, "♙"));
+        this.addPiece(new Rook(Piece.COLOR.WHITE, 'a', 1));
+        this.addPiece(new Knight(Piece.COLOR.WHITE, 'b', 1));
+        this.addPiece(new Bishop(Piece.COLOR.WHITE, 'c', 1));
+        this.addPiece(new Queen(Piece.COLOR.WHITE, 'd', 1));
+        this.addPiece(new King(Piece.COLOR.WHITE, 'e', 1));
+        this.addPiece(new Bishop(Piece.COLOR.WHITE, 'f', 1));
+        this.addPiece(new Knight(Piece.COLOR.WHITE, 'g', 1));
+        this.addPiece(new Rook(Piece.COLOR.WHITE, 'h', 1));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'a', 2));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'b', 2));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'c', 2));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'd', 2));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'e', 2));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'f', 2));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'g', 2));
+        this.addPiece(new Pawn(Piece.COLOR.WHITE, 'h', 2));
 
         //Initialize black pieces
-        this.addPiece(new Rook("black", 'a', 8, "♜"));
-        this.addPiece(new Knight("black", 'b', 8, "♞"));
-        this.addPiece(new Bishop("black", 'c', 8, "♝"));
-        this.addPiece(new Queen("black", 'd', 8, "♛"));
-        this.addPiece(new King("black", 'e', 8, "♚"));
-        this.addPiece(new Bishop("black", 'f', 8, "♝"));
-        this.addPiece(new Knight("black", 'g', 8, "♞"));
-        this.addPiece(new Rook("black", 'h', 8, "♜"));
-        this.addPiece(new Pawn("black", 'a', 7, "♟︎"));
-        this.addPiece(new Pawn("black", 'b', 7, "♟︎"));
-        this.addPiece(new Pawn("black", 'c', 7, "♟︎"));
-        this.addPiece(new Pawn("black", 'd', 7, "♟︎"));
-        this.addPiece(new Pawn("black", 'e', 7, "♟︎"));
-        this.addPiece(new Pawn("black", 'f', 7, "♟︎"));
-        this.addPiece(new Pawn("black", 'g', 7, "♟︎"));
-        this.addPiece(new Pawn("black", 'h', 7, "♟︎"));
+        this.addPiece(new Rook(Piece.COLOR.BLACK, 'a', 8));
+        this.addPiece(new Knight(Piece.COLOR.BLACK, 'b', 8));
+        this.addPiece(new Bishop(Piece.COLOR.BLACK, 'c', 8));
+        this.addPiece(new Queen(Piece.COLOR.BLACK, 'd', 8));
+        this.addPiece(new King(Piece.COLOR.BLACK, 'e', 8));
+        this.addPiece(new Bishop(Piece.COLOR.BLACK, 'f', 8));
+        this.addPiece(new Knight(Piece.COLOR.BLACK, 'g', 8));
+        this.addPiece(new Rook(Piece.COLOR.BLACK, 'h', 8));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'a', 7));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'b', 7));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'c', 7));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'd', 7));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'e', 7));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'f', 7));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'g', 7));
+        this.addPiece(new Pawn(Piece.COLOR.BLACK, 'h', 7));
     }
 
     public void addPiece(Piece piece){
@@ -57,6 +57,7 @@ public class Board {
         board[column_convert.indexOf(to_column)][to_row-1] = p;
     }
 
+    //Change to GUI soon
     public void draw(String turn) {
         int row_start = 0;
         int col_start = 7;

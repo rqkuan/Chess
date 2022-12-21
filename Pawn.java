@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Pawn extends Piece {
 
-    public Pawn(String color, char column, int row, String tag) {
-        super(color, column, row, tag);
+    public Pawn(COLOR color, char column, int row) {
+        super(color, column, row, TAG.PAWN);
     }
 
     public ArrayList<ArrayList<Integer>> getMoves() {
@@ -11,7 +11,7 @@ public class Pawn extends Piece {
         ArrayList<Integer> a = new ArrayList<Integer>();
         //move forward
         a.add(0);
-        if (color.equals("white")) 
+        if (color == Piece.COLOR.WHITE) 
             a.add(1);
         else
             a.add(-1);
@@ -21,7 +21,7 @@ public class Pawn extends Piece {
             moves.add(a);
 
             //move two spaces forward only from starting square
-            if (color.equals("white")) {
+            if (color == COLOR.WHITE) {
                 if (row == 1) 
                     a.set(1, 2);
             } else if (row == 6) 
@@ -48,7 +48,7 @@ public class Pawn extends Piece {
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {
         ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> a = new ArrayList<Integer>();
-        if (color.equals("white")) 
+        if (color == COLOR.WHITE) 
             a.add(1);
         else
             a.add(-1);

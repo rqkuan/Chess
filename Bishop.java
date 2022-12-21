@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Bishop extends Piece {
 
-    public Bishop(String color, char column, int row, String tag) {
-        super(color, column, row, tag);
+    public Bishop(COLOR color, char column, int row) {
+        super(color, column, row, TAG.BISHOP);
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {

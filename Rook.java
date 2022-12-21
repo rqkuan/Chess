@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Rook extends Piece {
 
-    public Rook(String color, char column, int row, String tag) {
-        super(color, column, row, tag);
+    public Rook(COLOR color, char column, int row) {
+        super(color, column, row, TAG.ROOK);
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {
