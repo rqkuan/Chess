@@ -1,9 +1,14 @@
 import java.util.*;
+import javax.swing.ImageIcon;
 
 public class King extends Piece {
 
     public King(COLOR color, char column, int row) {
         super(color, column, row, TAG.KING);
+        if (color == Piece.COLOR.WHITE)
+            this.icon = new ImageIcon("Icons/White_King.png");
+        else
+            this.icon = new ImageIcon("Icons/Black_King.png");
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {

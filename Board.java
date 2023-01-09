@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Board {
     
     public static Piece[][] board = new Piece[8][8];
+    public static ArrayList<Piece> pieces = new ArrayList<Piece>();
     public static String column_convert = "abcdefgh";
 
     public Board() {
@@ -44,7 +45,13 @@ public class Board {
     }
 
     public void addPiece(Piece piece){
-        board[piece.getCol()][piece.getRow()] = piece;
+        if (board[piece.getCol()][piece.getRow()] == null) {
+            board[piece.getCol()][piece.getRow()] = piece;
+            pieces.add(piece);
+            Display.display[piece.getCol()][piece.getRow()].setIcon(piece.getIcon());
+        }
+        else
+            board[piece.getCol()][piece.getRow()] = null;
     }
     
     public ArrayList<ArrayList<Integer>> findChecks(Piece.COLOR color) {
@@ -62,6 +69,8 @@ public class Board {
         return checks;
     }
 
+
+
     public void offerMoves(char column, int row) {
         //<clear all previously highlighted squares> (to be implemented in GUI)
         //<display moves that selected piece can make (from Piece.getMoves)>
@@ -72,31 +81,8 @@ public class Board {
         Piece p = board[column_convert.indexOf(from_column)][from_row-1];
         board[column_convert.indexOf(from_column)][from_row-1] = null;
         board[column_convert.indexOf(to_column)][to_row-1] = p;
-    }
-
-    //Change to GUI soon
-    public void draw(String turn) {
-        int row_start = 0;
-        int col_start = 7;
-        String str = "";
-        if (turn.equals("white")) {
-            row_start = 7;
-            col_start = 0;
-        }
-        for (int row = row_start; row >= 0 && row <= 7; row += -(row_start%5 - 1)) {
-            for (int col = col_start; col >= 0 && col <= 7; col += -(col_start%5 - 1)) {
-                if (board[col][row] == null)
-                    if ((col + row)%2 == 1)
-                        str += "□";
-                    else
-                        str += "■";
-                else
-                    str += board[col][row].getTag().code;
-                str += " ";
-            }
-            str += "\n";
-        }
-        System.out.println(str);
+        Display.display[column_convert.indexOf(from_column)][from_row-1].setIcon(null);
+        Display.display[column_convert.indexOf(to_column)][to_row-1].setIcon(p.getIcon());
     }
 
 }

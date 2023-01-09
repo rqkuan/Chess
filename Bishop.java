@@ -1,9 +1,14 @@
 import java.util.*;
+import javax.swing.ImageIcon;
 
 public class Bishop extends Piece {
 
     public Bishop(COLOR color, char column, int row) {
         super(color, column, row, TAG.BISHOP);
+        if (color == Piece.COLOR.WHITE)
+            this.icon = new ImageIcon("Icons/White_Bishop.png");
+        else
+            this.icon = new ImageIcon("Icons/Black_Bishop.png");
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {

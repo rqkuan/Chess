@@ -1,9 +1,14 @@
 import java.util.*;
+import javax.swing.ImageIcon;
 
 public class Pawn extends Piece {
 
     public Pawn(COLOR color, char column, int row) {
         super(color, column, row, TAG.PAWN);
+        if (color == Piece.COLOR.WHITE)
+            this.icon = new ImageIcon("Icons/White_Pawn.png");
+        else
+            this.icon = new ImageIcon("Icons/Black_Pawn.png");
     }
 
     public ArrayList<ArrayList<Integer>> getMoves() {

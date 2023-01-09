@@ -1,4 +1,5 @@
 import java.util.*;
+import javax.swing.ImageIcon;
 
 abstract class Piece {
 
@@ -20,6 +21,7 @@ abstract class Piece {
     protected final TAG tag;
     protected int col, row;
     protected ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
+    protected ImageIcon icon;
 
     public Piece(COLOR color, char column, int row, TAG tag) {
         this.color = color; 
@@ -42,6 +44,10 @@ abstract class Piece {
 
     public int getRow() {
         return row;
+    }
+
+    public ImageIcon getIcon() {
+        return icon;
     }
 
     public ArrayList<ArrayList<Integer>> getMoves() {

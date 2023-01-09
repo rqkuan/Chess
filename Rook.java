@@ -1,9 +1,14 @@
 import java.util.*;
+import javax.swing.ImageIcon;
 
 public class Rook extends Piece {
 
     public Rook(COLOR color, char column, int row) {
         super(color, column, row, TAG.ROOK);
+        if (color == Piece.COLOR.WHITE)
+            this.icon = new ImageIcon("Icons/White_Rook.png");
+        else
+            this.icon = new ImageIcon("Icons/Black_Rook.png");
     }
 
     public ArrayList<ArrayList<Integer>> getAttackingSquares() {
