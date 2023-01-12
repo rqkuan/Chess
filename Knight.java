@@ -3,8 +3,8 @@ import javax.swing.ImageIcon;
 
 public class Knight extends Piece {
 
-    public Knight(COLOR color, char column, int row) {
-        super(color, column, row, TAG.KNIGHT);
+    public Knight(COLOR color) {
+        super(color, TAG.KNIGHT);
         if (color == Piece.COLOR.WHITE)
             this.icon = new ImageIcon("Icons/White_Knight.png");
         else
@@ -47,8 +47,8 @@ public class Knight extends Piece {
         a.add(-1); 
 
         //add all valid squares
-        for (int i = 0; i < a.size()/2; i++) {
-            ArrayList<Integer> b = new ArrayList<Integer>(a.subList(i, i*2));
+        for (int i = 0; i < a.size(); i += 2) {
+            ArrayList<Integer> b = new ArrayList<Integer>(a.subList(i, i + 2));
             if (checkInBounds(b))
                 moves.add(b);
         }

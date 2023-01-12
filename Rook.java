@@ -3,8 +3,8 @@ import javax.swing.ImageIcon;
 
 public class Rook extends Piece {
 
-    public Rook(COLOR color, char column, int row) {
-        super(color, column, row, TAG.ROOK);
+    public Rook(COLOR color) {
+        super(color, TAG.ROOK);
         if (color == Piece.COLOR.WHITE)
             this.icon = new ImageIcon("Icons/White_Rook.png");
         else

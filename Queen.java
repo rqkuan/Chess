@@ -3,8 +3,8 @@ import javax.swing.ImageIcon;
 
 public class Queen extends Piece {
 
-    public Queen(COLOR color, char column, int row) {
-        super(color, column, row, TAG.QUEEN);
+    public Queen(COLOR color) {
+        super(color, TAG.QUEEN);
         if (color == Piece.COLOR.WHITE)
             this.icon = new ImageIcon("Icons/White_Queen.png");
         else
