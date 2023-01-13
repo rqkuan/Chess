@@ -45,7 +45,7 @@ public class Board extends JFrame implements ActionListener{
         undoButton.addActionListener(this);
         undoButton.setOpaque(true);
         undoButton.setBorder(new LineBorder(Color.black));
-        undoButton.setBackground(Color.green);
+        undoButton.setBackground(Color.decode("#779556"));
         undoButton.setBounds(20, 470, 100, 32);
 
         for (int col = 0; col < 8; col++) {
@@ -55,13 +55,10 @@ public class Board extends JFrame implements ActionListener{
                 board[col][row].setBorder(new LineBorder(Color.black));
                 board[col][row].addActionListener(this);
                 add(board[col][row]);
-                if ((col + row)%2 == 1)
-                    board[col][row].setBackground(Color.white);
-                else
-                    board[col][row].setBackground(Color.green);
             }
         }
         resetBoard();
+        draw();
     }
 
     public void resetBoard() {
@@ -123,6 +120,7 @@ public class Board extends JFrame implements ActionListener{
                 undo();
                 changeTurn();
                 updateMoveHistory();
+                selected = null;
                 draw();
             }
             return;
@@ -138,12 +136,31 @@ public class Board extends JFrame implements ActionListener{
             a.add(t.getRow()-selected.getRow());
             if (offerMoves().contains(a)) {                
                 move(t);
-                //Check for pawn promotion
-                if (t.getPiece().getTag() == Piece.TAG.PAWN && (t.getRow() == 0 || t.getRow() == 7)) {
-                    t.setPiece(null);
-                    addPiece(new Queen(turn), t.getCol(), t.getRow());
+                if (t.getPiece().getTag() == Piece.TAG.PAWN) { 
+                    //Special case: Promotion  
+                    if (t.getRow() == 0 || t.getRow() == 7) {
+                        t.setPiece(null);
+                        addPiece(new Queen(turn), t.getCol(), t.getRow());
+                    }
+                    //Special Case: En Passant
+                    else {
+                        Tile behindPawn = board[t.getCol()][t.getRow() + turn.color_num*2 - 1];
+                        if (behindPawn.getPiece() != null && behindPawn.getPiece().getTag() == Piece.TAG.PAWN) {
+                            int col = column_convert.indexOf(moveHistory.get(moveHistory.size()-1).charAt(0));
+                            int row = Character.getNumericValue(moveHistory.get(moveHistory.size()-1).charAt(1)) - 1;
+                            undo();
+                            selected = board[col][row];
+                            if (checkEnPassant().size() != 0) {
+                                behindPawn.setPiece(null);
+                                String previous = moveHistory.remove(moveHistory.size() - 1);
+                                moveHistory.add(previous.substring(0, 2)
+                                    + "x" + previous.charAt(4) + previous.charAt(1));
+                            }
+                            move(t);
+                        }
+                    }  
                 } else {
-                    //Check for castling
+                    //Special case: Castling
                     String check_castled = moveHistory.get(moveHistory.size()-1);
                     if (check_castled.charAt(0) == 'K' && check_castled.charAt(1) == 'e') {
                         if (check_castled.charAt(check_castled.length()-2) == 'c') {
@@ -158,33 +175,10 @@ public class Board extends JFrame implements ActionListener{
                     }
                 }
                 changeTurn();
+                if (findChecks().size() != 0)
+                            moveHistory.set(moveHistory.size() - 1, moveHistory.get(moveHistory.size() - 1) + "+");
                 updateMoveHistory();
-                gameover = true;
-                for (int col = 0; col < 8; col++) {
-                    for (int row = 0; row < 8; row++) {
-                        if (board[col][row].getPiece() != null && board[col][row].getPiece().getColor() == turn) {
-                            selected = board[col][row];
-                            if (offerMoves().size() != 0) {
-                                gameover = false;
-                            }
-                        }
-                    }
-                    if (!gameover)
-                        break;
-                }       
-                selected = null;
-
-                if (gameover) {
-                    if (findChecks().size() > 0) {
-                        String checkmate_code = moveHistory.get(moveHistory.size()-1);
-                        checkmate_code = checkmate_code.substring(0, checkmate_code.length() - 1);
-                        moveHistory.set(moveHistory.size()-1, checkmate_code);
-                        changeTurn();
-                        System.out.println("Checkmate! (" + turn + " WINS)");
-                    } else
-                        System.out.println("Stalemate.");
-                    return;
-                }
+                checkGameOver();
             } else if (p == null)
                 selected = t;
             draw();
@@ -215,18 +209,76 @@ public class Board extends JFrame implements ActionListener{
             undo();
             changeTurn();
         }
+        //Offer castling
         for (ArrayList<Integer> a : checkCastles()) {
+            board[selected.getCol() + a.get(0)][selected.getRow() + a.get(1)].setIcon(new ImageIcon("Icons/Dot.png"));
+            valid.add(a);
+        }
+
+        //Offer en passant
+        ArrayList<Integer> a = checkEnPassant();
+        if (a.size() != 0) {
             board[selected.getCol() + a.get(0)][selected.getRow() + a.get(1)].setIcon(new ImageIcon("Icons/Dot.png"));
             valid.add(a);
         }
         return valid;
     }
 
+    private void checkGameOver() {
+        gameover = true;
+        for (int col = 0; col < 8; col++) {
+            for (int row = 0; row < 8; row++) {
+                if (board[col][row].getPiece() != null && board[col][row].getPiece().getColor() == turn) {
+                    selected = board[col][row];
+                    if (offerMoves().size() != 0) {
+                        gameover = false;
+                    }
+                }
+            }
+            if (!gameover)
+                break;
+        }       
+        selected = null;
+
+        if (gameover) {
+            if (findChecks().size() > 0) {
+                String checkmate_code = moveHistory.get(moveHistory.size()-1);
+                checkmate_code = checkmate_code.substring(0, checkmate_code.length() - 1) + "#";
+                moveHistory.set(moveHistory.size()-1, checkmate_code);
+                changeTurn();
+                System.out.println("Checkmate! (" + turn + " WINS)");
+            } else
+                System.out.println("Stalemate.");
+            return;
+        }
+    }
+
     private ArrayList<Integer> checkEnPassant() {
-        if (selected.getPiece().getTag() != Piece.TAG.PAWN)
+        ArrayList<Integer> a = new ArrayList<Integer>();
+        if (moveHistory.size() == 0)
             return new ArrayList<Integer>();
         String previous = moveHistory.get(moveHistory.size() - 1);
-        if (previous.charAt(0))
+        if (previous.charAt(previous.length()-1) == '+') {
+            previous = previous.substring(0, previous.length()-1);
+        }
+        int from_row = Character.getNumericValue(previous.charAt(1));
+        int to_row = Character.getNumericValue(previous.charAt(previous.length() - 1));
+        if (selected.getPiece().getTag() != Piece.TAG.PAWN || 
+            previous.charAt(0) == Character.toUpperCase(previous.charAt(0)) || 
+            to_row - 1 != selected.getRow() || (from_row - to_row) % 2 != 0) 
+            {return new ArrayList<Integer>();}
+        
+        int column = column_convert.indexOf(previous.charAt(0));
+        if (column == selected.getCol() - 1) {
+            a.add(-1);
+            a.add((turn.color_num*-2) + 1);
+            return a;
+        } else if (column == selected.getCol() + 1) {
+            a.add(1);
+            a.add((turn.color_num*-2) + 1);
+            return a;
+        }
+        return new ArrayList<Integer>();
     }
 
     private ArrayList<ArrayList<Integer>> checkCastles() {
@@ -326,34 +378,77 @@ public class Board extends JFrame implements ActionListener{
         selected.setIcon(null);
         selected = null;
 
-        if (findChecks().size() > 0)
-            moveCode += "+";
         moveHistory.add(moveCode);
     }
 
     public void undo() {
-        String last = moveHistory.remove(moveHistory.size()-1);
-        if (last.charAt(0) == Character.toUpperCase(last.charAt(0)))
-            last = last.substring(1);
-        if (last.charAt(last.length()-1) == '+' || last.charAt(last.length()-1) == '#')
-            last = last.substring(0, last.length()-1);
+        String previous = moveHistory.remove(moveHistory.size()-1);
+        if (previous.charAt(previous.length()-1) == '+')
+            previous = previous.substring(0, previous.length()-1);
 
-        int col = column_convert.indexOf(last.charAt(last.length()-2));
-        int row = Character.getNumericValue(last.charAt(last.length()-1))-1;
+        //Special case: castling
+        if (previous.equals("O-O-O")) {
+            changeTurn();
+            board[2][(8 - turn.color_num)%8].setPiece(null);
+            board[3][(8 - turn.color_num)%8].setPiece(null);
+            addPiece(new King(turn), 4, (8 - turn.color_num)%8);
+            addPiece(new Rook(turn), 0, (8 - turn.color_num)%8);
+            changeTurn();
+            return;
+        }
+        else if (previous.equals("O-O")) {
+            changeTurn();
+            board[5][(8 - turn.color_num)%8].setPiece(null);
+            board[6][(8 - turn.color_num)%8].setPiece(null);
+            addPiece(new King(turn), 4, (8 - turn.color_num)%8);
+            addPiece(new Rook(turn), 7, (8 - turn.color_num)%8);
+            changeTurn();
+            return;
+        }
+        
+        //Special case: Promotion
+        else if (previous.charAt(previous.length()-2) == '=') {
+            previous = previous.substring(0, previous.length()-2);
+            int col = column_convert.indexOf(previous.charAt(previous.length()-2));
+            int row = Character.getNumericValue(previous.charAt(previous.length()-1))-1;
+            changeTurn();
+            board[col][row].setPiece(new Pawn(turn));
+            changeTurn();
+        }
+
+        //Special case: En Passant
+        else if (previous.length() == 5 && previous.charAt(1) == previous.charAt(4)) {
+            int col = column_convert.indexOf(previous.charAt(3));
+            int row = Character.getNumericValue(previous.charAt(1))-1;
+            board[col][row - (turn.color_num * -2) - 1].setPiece(null);
+
+            addPiece(new Pawn(turn), col, row);
+            changeTurn();
+            col = column_convert.indexOf(previous.charAt(0));
+            addPiece(new Pawn(turn), col, row);
+            changeTurn();
+            return;
+        }
+
+        if (previous.charAt(0) == Character.toUpperCase(previous.charAt(0)))
+            previous = previous.substring(1);
+
+        int col = column_convert.indexOf(previous.charAt(previous.length()-2));
+        int row = Character.getNumericValue(previous.charAt(previous.length()-1))-1;
         Tile t = board[col][row];
 
-        col = column_convert.indexOf(last.charAt(0));
-        row = Character.getNumericValue(last.charAt(1)-1);
+        col = column_convert.indexOf(previous.charAt(0));
+        row = Character.getNumericValue(previous.charAt(1)-1);
         addPiece(t.getPiece(), col, row);
         selected = board[col][row];
 
         t.setPiece(null);
         t.setIcon(null);
-        if (last.charAt(2) == 'x') {
-            if (last.length() == 5)
+        if (previous.charAt(2) == 'x') {
+            if (previous.length() == 5)
                 addPiece(new Pawn(turn), t.getCol(), t.getRow());
             else {
-                char type = last.charAt(3);
+                char type = previous.charAt(3);
                 switch (type) {
                     case 'B': 
                         addPiece(new Bishop(turn), t.getCol(), t.getRow());
@@ -398,12 +493,68 @@ public class Board extends JFrame implements ActionListener{
                 else
                     t.setIcon(null);
 
+                if ((col + row)%2 == 1)
+                    t.setBackground(Color.decode("#eaecd0"));
+                else
+                    t.setBackground(Color.decode("#779556"));
+
                 if (turn == Piece.COLOR.WHITE) 
                     t.setBounds(col*64, (7-row)*64, 64, 64);
                 else
                     t.setBounds((7-col)*64, row*64, 64, 64);
             }
         }
+        if (selected != null && selected.getPiece() != null)
+            selected.setBackground(Color.yellow);
+        
+        for (ArrayList<Integer> a : findChecks())
+            board[a.get(0)][a.get(1)].setBackground(Color.red);
+
+        if (moveHistory.size() == 0)
+            return;
+        String previous = moveHistory.get(moveHistory.size()-1);
+        //Special case: castling
+        if (previous.equals("O-O-O")) {
+            changeTurn();
+            board[2][(8 - turn.color_num)%8].setBackground(Color.yellow);
+            board[3][(8 - turn.color_num)%8].setBackground(Color.yellow);
+            changeTurn();
+            return;
+        }
+        else if (previous.equals("O-O")) {
+            changeTurn();
+            board[5][(8 - turn.color_num)%8].setBackground(Color.yellow);
+            board[6][(8 - turn.color_num)%8].setBackground(Color.yellow);
+            changeTurn();
+            return;
+        }
+
+        if (previous.charAt(previous.length()-1) == '+')
+            previous = previous.substring(0, previous.length()-1);
+        if (previous.charAt(previous.length()-2) == '=')
+        previous = previous.substring(0, previous.length()-2);
+
+        //Special case: En Passant
+        if (previous.length() == 5 && previous.charAt(1) == previous.charAt(4)) {
+            int col = column_convert.indexOf(previous.charAt(3));
+            int row = Character.getNumericValue(previous.charAt(1))-1;
+            board[col][row - (turn.color_num * -2) - 1].setBackground(Color.yellow);
+
+            col = column_convert.indexOf(previous.charAt(0));
+            board[col][row].setBackground(Color.yellow);
+            return;
+        }
+
+        if (previous.charAt(0) == Character.toUpperCase(previous.charAt(0)))
+            previous = previous.substring(1);
+        
+        int col = column_convert.indexOf(previous.charAt(0));
+        int row = Character.getNumericValue(previous.charAt(1)) - 1;
+        board[col][row].setBackground(Color.yellow);
+        
+        col = column_convert.indexOf(previous.charAt(previous.length()-2));
+        row = Character.getNumericValue(previous.charAt(previous.length()-1)) - 1;
+        board[col][row].setBackground(Color.yellow);
     }
 
 }
