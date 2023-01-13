@@ -3,7 +3,15 @@ import javax.swing.ImageIcon;
 
 abstract class Piece {
 
-    public enum COLOR {WHITE, BLACK}
+    public enum COLOR {
+        WHITE(0), 
+        BLACK(1);
+        
+        public final int color_num;
+        private COLOR(int color_num) {
+            this.color_num = color_num;
+        }
+    }
     public enum TAG {
         PAWN(""), 
         BISHOP("B"), 
