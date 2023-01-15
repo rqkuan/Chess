@@ -11,7 +11,8 @@ public class Board extends JFrame implements ActionListener{
     private static Tile selected;
     private static Piece.COLOR turn = Piece.COLOR.WHITE;
     private static ArrayList<String> moveHistory = new ArrayList<String>();
-    private static final JButton undoButton = new JButton("Undo");  
+    private static final JButton button1 = new JButton("Undo");  
+    private static final JButton button2 = new JButton("Concede");  
     private static JPanel sidebar = new JPanel();  
     private static JLabel title = new JLabel();  
     private static JTextArea moveHistoryDisplay = new JTextArea();  
@@ -25,8 +26,6 @@ public class Board extends JFrame implements ActionListener{
         setSize(1200, 840);
         setVisible(true);
 
-
-
         add(sidebar);
         sidebar.setBounds(512, 0, 240, 512);
         sidebar.setBackground(Color.decode("#BBBBBB"));
@@ -34,19 +33,29 @@ public class Board extends JFrame implements ActionListener{
         
         sidebar.add(title);
         title.setText("Chess");
-        title.setBounds(20, 50, 200, 50);
+        title.setOpaque(true);
+        title.setBackground(Color.decode("#779556"));
+        title.setBorder(new LineBorder(Color.black));
+        title.setBounds(20, 40, 200, 50);
 
         JScrollPane scp = new JScrollPane(moveHistoryDisplay);
         sidebar.add(scp);
-        scp.setBounds(20, 100, 200, 350);
+        scp.setBounds(20, 90, 200, 350);
         moveHistoryDisplay.setEditable(false);
         
-        sidebar.add(undoButton);
-        undoButton.addActionListener(this);
-        undoButton.setOpaque(true);
-        undoButton.setBorder(new LineBorder(Color.black));
-        undoButton.setBackground(Color.decode("#779556"));
-        undoButton.setBounds(20, 470, 100, 32);
+        sidebar.add(button1);
+        button1.addActionListener(this);
+        button1.setOpaque(true);
+        button1.setBorder(new LineBorder(Color.black));
+        button1.setBackground(Color.decode("#779556"));
+        button1.setBounds(20, 460, 90, 32);
+
+        sidebar.add(button2);
+        button2.addActionListener(this);
+        button2.setOpaque(true);
+        button2.setBorder(new LineBorder(Color.black));
+        button2.setBackground(Color.decode("#779556"));
+        button2.setBounds(130, 460, 90, 32);
 
         for (int col = 0; col < 8; col++) {
             for (int row = 0; row < 8; row++) {
@@ -58,6 +67,7 @@ public class Board extends JFrame implements ActionListener{
             }
         }
         resetBoard();
+        draw();
         draw();
     }
 
@@ -115,7 +125,23 @@ public class Board extends JFrame implements ActionListener{
         
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == undoButton) {
+        if (e.getSource() == button1) {
+            //Play Again
+            if (gameover) {
+                gameover = false; 
+                selected = null;
+                resetBoard();
+                turn = Piece.COLOR.WHITE;
+                moveHistory.clear();
+                updateMoveHistory();
+                title.setText("Chess");
+                button1.setText("Undo");
+                button2.setText("Concede");
+                draw();
+                return;
+            }
+
+            //Undo
             if (moveHistory.size() != 0) {
                 undo();
                 changeTurn();
@@ -125,6 +151,24 @@ public class Board extends JFrame implements ActionListener{
             }
             return;
         }
+
+        if (e.getSource() == button2) {
+            //Quit
+            if (gameover)
+                this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+            
+            //Concede
+            gameover = true; 
+            changeTurn(); 
+            title.setText(turn + " WINS (Resignation)");
+            button1.setText("Play Again");
+            button2.setText("Quit");
+            return;
+        }
+
+        if (gameover)
+            return;
+
         Tile t = ((Tile)e.getSource());
         Piece p = t.getPiece();
         if (p == null || p.getColor() != turn) {
@@ -178,7 +222,23 @@ public class Board extends JFrame implements ActionListener{
                 if (findChecks().size() != 0)
                             moveHistory.set(moveHistory.size() - 1, moveHistory.get(moveHistory.size() - 1) + "+");
                 updateMoveHistory();
-                checkGameOver();
+                
+                //Look for checkmates/stalemates
+                if (checkGameover()) {
+                    if (findChecks().size() > 0) {
+                        String checkmate_code = moveHistory.get(moveHistory.size()-1);
+                        checkmate_code = checkmate_code.substring(0, checkmate_code.length() - 1) + "#";
+                        moveHistory.set(moveHistory.size()-1, checkmate_code);
+                        changeTurn();
+                        title.setText(turn + " WINS (Checkmate)");
+                    } else
+                        title.setText("Stalemate");
+                    button1.setText("Play Again");
+                    button2.setText("Quit");
+                    draw();
+                    return;
+                    
+                }
             } else if (p == null)
                 selected = t;
             draw();
@@ -224,7 +284,7 @@ public class Board extends JFrame implements ActionListener{
         return valid;
     }
 
-    private void checkGameOver() {
+    private boolean checkGameover() {
         gameover = true;
         for (int col = 0; col < 8; col++) {
             for (int row = 0; row < 8; row++) {
@@ -239,18 +299,7 @@ public class Board extends JFrame implements ActionListener{
                 break;
         }       
         selected = null;
-
-        if (gameover) {
-            if (findChecks().size() > 0) {
-                String checkmate_code = moveHistory.get(moveHistory.size()-1);
-                checkmate_code = checkmate_code.substring(0, checkmate_code.length() - 1) + "#";
-                moveHistory.set(moveHistory.size()-1, checkmate_code);
-                changeTurn();
-                System.out.println("Checkmate! (" + turn + " WINS)");
-            } else
-                System.out.println("Stalemate.");
-            return;
-        }
+        return gameover;
     }
 
     private ArrayList<Integer> checkEnPassant() {
@@ -529,7 +578,7 @@ public class Board extends JFrame implements ActionListener{
             return;
         }
 
-        if (previous.charAt(previous.length()-1) == '+')
+        if (previous.charAt(previous.length()-1) == '+' || previous.charAt(previous.length()-1) == '#' )
             previous = previous.substring(0, previous.length()-1);
         if (previous.charAt(previous.length()-2) == '=')
         previous = previous.substring(0, previous.length()-2);
