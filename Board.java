@@ -74,6 +74,7 @@ public class Board extends JFrame implements ActionListener{
             }
         }
         resetBoard();
+        updateMoveHistory();
         draw();
     }
 
