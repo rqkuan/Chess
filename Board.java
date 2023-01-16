@@ -40,6 +40,9 @@ public class Board extends JFrame implements ActionListener{
         title.setOpaque(true);
         title.setBackground(Color.decode("#779556"));
         title.setBorder(new LineBorder(Color.black));
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setVerticalAlignment(JLabel.CENTER);
+        title.setFont(new Font(title.getFont().getName(), Font.PLAIN, 14));
         title.setBounds(20, 40, 200, 50);
 
         JScrollPane scp = new JScrollPane(moveHistoryDisplay);
