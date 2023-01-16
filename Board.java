@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -23,8 +23,12 @@ public class Board extends JFrame implements ActionListener{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setResizable(false);
-        setSize(1200, 840);
+        setSize(752, 540);
         setVisible(true);
+        Dimension dm = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dm.getWidth() - this.getWidth()) / 2);
+        int y = (int) ((dm.getHeight() - this.getHeight()) / 2);
+        this.setLocation(x, y);
 
         add(sidebar);
         sidebar.setBounds(512, 0, 240, 512);
@@ -67,7 +71,6 @@ public class Board extends JFrame implements ActionListener{
             }
         }
         resetBoard();
-        draw();
         draw();
     }
 
@@ -225,22 +228,13 @@ public class Board extends JFrame implements ActionListener{
                 
                 //Look for checkmates/stalemates
                 if (checkGameover()) {
-                    if (findChecks().size() > 0) {
-                        String checkmate_code = moveHistory.get(moveHistory.size()-1);
-                        checkmate_code = checkmate_code.substring(0, checkmate_code.length() - 1) + "#";
-                        moveHistory.set(moveHistory.size()-1, checkmate_code);
-                        changeTurn();
-                        title.setText(turn + " WINS (Checkmate)");
-                    } else
-                        title.setText("Stalemate");
                     button1.setText("Play Again");
                     button2.setText("Quit");
                     draw();
                     return;
-                    
                 }
-            } else if (p == null)
-                selected = t;
+            } else
+                selected = null;
             draw();
             return;
         }
@@ -292,13 +286,64 @@ public class Board extends JFrame implements ActionListener{
                     selected = board[col][row];
                     if (offerMoves().size() != 0) {
                         gameover = false;
+                        selected = null;
+                        return gameover;
                     }
                 }
             }
-            if (!gameover)
-                break;
         }       
         selected = null;
+
+        if (gameover) {
+            if (findChecks().size() > 0) {
+                String checkmate_code = moveHistory.get(moveHistory.size()-1);
+                checkmate_code = checkmate_code.substring(0, checkmate_code.length() - 1) + "#";
+                moveHistory.set(moveHistory.size()-1, checkmate_code);
+                changeTurn();
+                title.setText(turn + " WINS (Checkmate)");
+            } else
+                title.setText("Stalemate");
+            return gameover;
+        } 
+
+        //Stalemate by lack of material
+        int material_count = 0;
+        boolean flag = false;
+        gameover = true;
+        for (int i = 0; i < 2; i++) {
+            for (int col = 0; col < 8; col++) {
+                for (int row = 0; row < 8; row++) { 
+                    if (board[col][row].getPiece() != null && board[col][row].getPiece().getColor() == turn) {
+                        switch (board[col][row].getPiece().getTag().code) {
+                            case "": 
+                                material_count += 5;
+                                break;
+                            case "N": 
+                                material_count += 2;
+                                break;
+                            case "B": 
+                                material_count += 3;
+                                break;
+                            case "R": 
+                                material_count += 5;
+                                break;
+                            case "Q": 
+                                material_count += 5;
+                        }
+                        if (material_count >= 5) {
+                            if (flag)
+                                changeTurn();
+                            gameover = false;
+                            return gameover;
+                        }
+                    }
+                }
+            }      
+            flag = true;
+            changeTurn();
+            material_count = 0;
+        }
+        title.setText("Stalemate");
         return gameover;
     }
 
@@ -553,7 +598,7 @@ public class Board extends JFrame implements ActionListener{
                     t.setBounds((7-col)*64, row*64, 64, 64);
             }
         }
-        if (selected != null && selected.getPiece() != null)
+        if (selected != null)
             selected.setBackground(Color.yellow);
         
         for (ArrayList<Integer> a : findChecks())
