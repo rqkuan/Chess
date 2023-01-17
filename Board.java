@@ -246,14 +246,12 @@ public class Board extends JFrame implements ActionListener{
                     }
                     //Special Case: En Passant
                     else {
-                        System.out.println("hi");
                         Tile behindPawn = board[t.getCol()][t.getRow() + turn.color_num*2 - 1];
                         if (behindPawn.getPiece() != null && behindPawn.getPiece().getTag() == Piece.TAG.PAWN) {
                             String previous = moveHistory.get(moveHistory.size() - 1);
                             int col = column_convert.indexOf(previous.charAt(0));
                             int row = Character.getNumericValue(previous.charAt(1)) - 1;
                             undo();
-                            System.out.println("hello");
                             selected = board[col][row];
                             if (checkEnPassant().size() != 0) {
                                 behindPawn.setPiece(null);
