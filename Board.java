@@ -649,7 +649,6 @@ public class Board extends JFrame implements ActionListener{
 
         //Special case: En Passant
         else if (previous.length() == 5 && previous.charAt(1) == previous.charAt(4)) {
-            System.out.println("hi");
             int col = column_convert.indexOf(previous.charAt(3));
             int row = Character.getNumericValue(previous.charAt(1))-1;
             board[col][row - (turn.color_num * -2) - 1].setPiece(null);
