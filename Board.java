@@ -301,6 +301,7 @@ public class Board extends JFrame implements ActionListener{
                 
                 //Look for checkmates/stalemates
                 if (checkGameover()) {
+                    updateMoveHistory();
                     button1.setText("Play Again");
                     button2.setText("Quit");
                     draw();
