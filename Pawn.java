@@ -74,8 +74,4 @@ public class Pawn extends Piece {
         return moves;
     }
 
-    public void promote(Piece piece) {
-        //implement promotion later
-    }
-
 }

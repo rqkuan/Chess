@@ -55,7 +55,11 @@ abstract class Piece {
         return icon;
     }
 
-
+    /**
+     * getMoves
+     * @return ArrayList<ArrayList<Integer>> moves
+     * returns an arraylist of displacement vectors to represent possible moves that can be made
+     */
     public ArrayList<ArrayList<Integer>> getMoves() {
         ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
         for (ArrayList<Integer> a : getAttackingSquares()) {
@@ -69,8 +73,19 @@ abstract class Piece {
         return moves;
     }
 
+    /**
+     * getAttackingSquares
+     * @return ArrayList<ArrayList<Integer>> attacks
+     * returns and arraylist of displacement vectors to represent the tiles that the piece attacks
+     */
     abstract ArrayList<ArrayList<Integer>> getAttackingSquares();
 
+    /**
+     * checkInBounds
+     * @param a
+     * @return boolean
+     * Checks whether or not a displacement vector would put a piece off the edge of the board
+     */
     public boolean checkInBounds(ArrayList<Integer> a) {
         if (tile.getCol() + a.get(0) >= 0 && tile.getCol() + a.get(0) <= 7 && 
             tile.getRow() + a.get(1) >= 0 && tile.getRow() + a.get(1) <= 7) 
@@ -78,6 +93,13 @@ abstract class Piece {
         return false;
     }
 
+    /**
+     * addLine
+     * @param direction
+     * @return ArrayList<ArrayList<Integer>> moves
+     * returns an arraylist of displacement vectors representing moves in a straight line 
+     * (until hitting a piece or reaching the end of the board)
+     */
     public ArrayList<ArrayList<Integer>> addLine(int[] direction) {
         ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> a = new ArrayList<Integer>();
