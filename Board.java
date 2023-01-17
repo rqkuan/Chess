@@ -239,23 +239,35 @@ public class Board extends JFrame implements ActionListener{
                         if (previous.charAt(previous.length()-4) == '+') 
                             previous = previous.substring(0, previous.length()-4) 
                             + previous.substring(previous.length()-3) + "+";
+                        else if (previous.charAt(previous.length()-4) == '#') 
+                        previous = previous.substring(0, previous.length()-4) 
+                        + previous.substring(previous.length()-3) + "#";
                         moveHistory.add(previous);
                     }
                     //Special Case: En Passant
                     else {
+                        System.out.println("hi");
                         Tile behindPawn = board[t.getCol()][t.getRow() + turn.color_num*2 - 1];
                         if (behindPawn.getPiece() != null && behindPawn.getPiece().getTag() == Piece.TAG.PAWN) {
-                            int col = column_convert.indexOf(moveHistory.get(moveHistory.size()-1).charAt(0));
-                            int row = Character.getNumericValue(moveHistory.get(moveHistory.size()-1).charAt(1)) - 1;
+                            String previous = moveHistory.get(moveHistory.size() - 1);
+                            int col = column_convert.indexOf(previous.charAt(0));
+                            int row = Character.getNumericValue(previous.charAt(1)) - 1;
                             undo();
+                            System.out.println("hello");
                             selected = board[col][row];
                             if (checkEnPassant().size() != 0) {
                                 behindPawn.setPiece(null);
-                                String previous = moveHistory.remove(moveHistory.size() - 1);
                                 moveHistory.add(previous.substring(0, 2)
                                     + "x" + previous.charAt(4) + previous.charAt(1));
+                                if (previous.charAt(previous.length()-4) == '+') 
+                                previous = previous.substring(0, previous.length()-4) 
+                                + previous.substring(previous.length()-3) + "+";
+                                else if (previous.charAt(previous.length()-4) == '#') 
+                                previous = previous.substring(0, previous.length()-4) 
+                                + previous.substring(previous.length()-3) + "#";
                             }
                             move(t);
+                            moveHistory.remove(moveHistory.size()-1);
                         }
                     }  
                 } 
@@ -263,17 +275,23 @@ public class Board extends JFrame implements ActionListener{
                 //King moves: 
                 else {
                     //Special case: Castling
-                    String check_castled = moveHistory.get(moveHistory.size()-1);
-                    if (check_castled.charAt(0) == 'K' && check_castled.charAt(1) == 'e') {
-                        if (check_castled.charAt(check_castled.length()-2) == 'c') {
+                    String previous = moveHistory.get(moveHistory.size()-1);
+                    if (previous.charAt(0) == 'K' && previous.charAt(1) == 'e') {
+                        if (previous.charAt(previous.length()-2) == 'c') {
                             board[0][t.getRow()].setPiece(null);
                             addPiece(new Rook(turn), 3, t.getRow());
                             moveHistory.set(moveHistory.size() - 1, "O-O-O");
-                        } else if (check_castled.charAt(check_castled.length()-2) == 'g') {
+                        } else if (previous.charAt(previous.length()-2) == 'g') {
                             board[7][t.getRow()].setPiece(null);
                             addPiece(new Rook(turn), 5, t.getRow());
                             moveHistory.set(moveHistory.size() - 1, "O-O");
                         }
+                        if (previous.charAt(previous.length()-4) == '+') 
+                            previous = previous.substring(0, previous.length()-4) 
+                            + previous.substring(previous.length()-3) + "+";
+                        else if (previous.charAt(previous.length()-4) == '#') 
+                            previous = previous.substring(0, previous.length()-4) 
+                            + previous.substring(previous.length()-3) + "#";
                     }
                 }
 
@@ -632,10 +650,10 @@ public class Board extends JFrame implements ActionListener{
 
         //Special case: En Passant
         else if (previous.length() == 5 && previous.charAt(1) == previous.charAt(4)) {
+            System.out.println("hi");
             int col = column_convert.indexOf(previous.charAt(3));
             int row = Character.getNumericValue(previous.charAt(1))-1;
             board[col][row - (turn.color_num * -2) - 1].setPiece(null);
-
             addPiece(new Pawn(turn), col, row);
             changeTurn();
             col = column_convert.indexOf(previous.charAt(0));
